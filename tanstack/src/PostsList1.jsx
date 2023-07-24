@@ -5,6 +5,7 @@ export default function PostsList1() {
   const postsQuery = useQuery({
     queryKey: ["posts"],
     queryFn: getPosts,
+    // placeholderData는 임시 데이터이다. (캐시에 저장되지 않는다)
     placeholderData: [{ id: 1, name: "Initial Data" }],
   });
 
