@@ -13,3 +13,14 @@ export function getPost(id) {
     .get(`https://jsonplaceholder.typicode.com/posts?id=${id}`)
     .then((res) => res.data);
 }
+
+export function createPost({ title, body }) {
+  return axios
+    .post("https://jsonplaceholder.typicode.com/posts/1/comments", {
+      title,
+      body,
+      userId: 1,
+      id: Date.now(),
+    })
+    .then((res) => res.data);
+}
