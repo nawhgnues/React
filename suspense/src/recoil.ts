@@ -1,12 +1,12 @@
 // recoil.ts
 import { atom } from "recoil";
 
-export const dataState1 = atom<string>({
-  key: "dataState1",
+export const titleState = atom<string>({
+  key: "title",
   default: "",
 });
 
-export const dataState2 = atom<string>({
-  key: "dataState2",
+export const bodyState = atom<string>({
+  key: "body",
   default: "",
 });

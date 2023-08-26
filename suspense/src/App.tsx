@@ -1,59 +1,60 @@
-import { Suspense, useEffect } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
 import { useQuery } from "@tanstack/react-query";
-import { fetchData, fetchData2 } from "./api"; // Assume you have an API module named api.ts
-import { dataState1, dataState2 } from "./recoil"; // Assume you have a Recoil atom named recoil.ts
+import { Suspense, useState } from "react";
+import { getFetchData } from "./api";
+import { useRecoilState } from "recoil";
+import { bodyState, titleState } from "./recoil";
 
-function App() {
-  const { isLoading, isError } = useQuery(["data"], fetchData);
-  const [data1, setData1] = useRecoilState(dataState1);
-  const [data2, setData2] = useRecoilState(dataState2);
+export const App = () => {
+  const [title, setTitle] = useRecoilState(titleState);
+  const [body, setBody] = useRecoilState(bodyState);
 
-  useEffect(() => {
-    const fetchDataAsync = async () => {
-      try {
-        const response = await fetchData();
-        setData1(response);
-      } catch (error) {
-        console.log(error);
+  const Title = () => {
+    const { data } = useQuery(
+      ["serverData1"],
+      () =>
+        getFetchData().then((data) => {
+          setTitle(data.data.title);
+          return data.data;
+        }),
+      {
+        suspense: true,
       }
-    };
+    );
+    return <div>{data.title}</div>;
+  };
 
-    const fetchDataAsync2 = async () => {
-      try {
-        const response = await fetchData2();
-        setData2(response);
-      } catch (error) {
-        console.log(error);
+  const Body = () => {
+    const { data } = useQuery(
+      ["serverData2"],
+      () =>
+        getFetchData().then((data) => {
+          setBody(data.data.body);
+          return data.data;
+        }),
+      {
+        suspense: true,
       }
-    };
-    fetchDataAsync();
-    fetchDataAsync2();
-  }, []);
-
-  if (isLoading) {
-    return <h1>Loading...</h1>;
-  }
-
-  if (isError) {
-    return <div>Error fetching data</div>;
-  }
+    );
+    return <div>{data.body}</div>;
+  };
 
   return (
-    <div>
-      <h1>React Suspense Example</h1>
-      <Suspense fallback={<h1>Loading...</h1>}>
-        <DataComponent data={data1} />
-        <Suspense fallback={<h1>LoadingLoadingLoadingLoadingLoading</h1>}>
-          <DataComponent data={data2} />
-        </Suspense>
+    <>
+      <h1>Title</h1>
+      <Suspense fallback={<h2>Title Loading...</h2>}>
+        <Title />
       </Suspense>
-    </div>
-  );
-}
+      <hr />
+      <h1>Body</h1>
+      <Suspense fallback={<h2>Body Loading...</h2>}>
+        <Body />
+      </Suspense>
 
-function DataComponent({ data }: { data: string }) {
-  return <div>{data}</div>;
-}
+      <hr></hr>
+      <h1>{title}</h1>
+      <h2>{body}</h2>
+    </>
+  );
+};
 
 export default App;
