@@ -5,6 +5,7 @@ import { useRecoilState } from "recoil";
 import { bodyState, titleState } from "./recoil";
 
 export const App = () => {
+  const { isLoading, isError } = useQuery(["data"], getFetchData);
   const [title, setTitle] = useRecoilState(titleState);
   const [body, setBody] = useRecoilState(bodyState);
 
@@ -38,6 +39,14 @@ export const App = () => {
     return <div>{data.body}</div>;
   };
 
+  if (isLoading) {
+    return <h1>Loading...</h1>;
+  }
+
+  if (isError) {
+    return <h1>Error fetching data</h1>;
+  }
+
   return (
     <>
       <h1>Title</h1>
@@ -51,8 +60,17 @@ export const App = () => {
       </Suspense>
 
       <hr></hr>
-      <h1>{title}</h1>
-      <h2>{body}</h2>
+      <Suspense fallback={<h1>Loading...</h1>}>
+        <h1>Result</h1>
+        <div>
+          <h3>Title</h3>
+          <Title />
+        </div>
+        <div>
+          <h3>Body</h3>
+          <Body />
+        </div>
+      </Suspense>
     </>
   );
 };
